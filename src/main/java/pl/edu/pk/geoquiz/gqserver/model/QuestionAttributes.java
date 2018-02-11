@@ -3,13 +3,14 @@ package pl.edu.pk.geoquiz.gqserver.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "QUESTION_ATTRIBUTES", uniqueConstraints = {@UniqueConstraint(columnNames = {"question_content_id", "question_about_api", "question_context_api"})})
 public class QuestionAttributes {
 
 	@Id
-	@Column(name = "ID", nullable = false)
+	@Column(name = "ID", nullable = false, length = 10)
 	@GeneratedValue(generator = "qAttributes_seq")
 	@SequenceGenerator(name = "qAttributes_seq", sequenceName = "QUESTION_ATTRIBUTES_SEQ", allocationSize = 1)
 	private Integer id;
@@ -17,6 +18,9 @@ public class QuestionAttributes {
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private QuestionContent questionContent;
+
+	@OneToMany(mappedBy = "questionAttributes")
+	private List<ActiveQuestion> activeQuestion;
 
 	@Column(name = "QUESTION_ATTRIBUTE", nullable = false, length = 50)
 	private String questionAttribute;
@@ -75,5 +79,13 @@ public class QuestionAttributes {
 
 	public void setQuestionContextApi(String questionContextApi) {
 		this.questionContextApi = questionContextApi;
+	}
+
+	public List<ActiveQuestion> getActiveQuestion() {
+		return activeQuestion;
+	}
+
+	public void setActiveQuestion(List<ActiveQuestion> activeQuestion) {
+		this.activeQuestion = activeQuestion;
 	}
 }

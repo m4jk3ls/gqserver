@@ -8,7 +8,7 @@ import java.util.List;
 public class QuestionContent {
 
 	@Id
-	@Column(name = "ID", nullable = false)
+	@Column(name = "ID", nullable = false, length = 10)
 	@GeneratedValue(generator = "qContent_seq")
 	@SequenceGenerator(name = "qContent_seq", sequenceName = "QUESTION_CONTENT_SEQ", allocationSize = 1)
 	private Integer id;
