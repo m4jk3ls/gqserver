@@ -14,7 +14,7 @@ public class ActiveQuestion {
 	private String token;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
 	private QuestionAttributes questionAttributes;
 
 	@Column(name = "ANSWER", nullable = false, length = 1000)

@@ -16,11 +16,14 @@ public class QuestionAttributes {
 	private Integer id;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
 	private QuestionContent questionContent;
 
 	@OneToMany(mappedBy = "questionAttributes")
 	private List<ActiveQuestion> activeQuestion;
+
+	@OneToMany(mappedBy = "questionAttributes")
+	private List<Archives> archives;
 
 	@Column(name = "QUESTION_ATTRIBUTE", nullable = false, length = 50)
 	private String questionAttribute;
