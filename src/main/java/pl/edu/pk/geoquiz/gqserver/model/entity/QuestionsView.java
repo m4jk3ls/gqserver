@@ -1,4 +1,4 @@
-package pl.edu.pk.geoquiz.gqserver.model;
+package pl.edu.pk.geoquiz.gqserver.model.entity;
 
 import org.hibernate.annotations.Immutable;
 
@@ -23,11 +23,8 @@ public class QuestionsView {
 	@Column(name = "ATTRIBUTE_POSITION")
 	private Integer attributePosition;
 
-	@Column(name = "QUESTION_ABOUT_API")
-	private String questionAboutInApi;
-
-	@Column(name = "QUESTION_CONTEXT_API")
-	private String questionContextInApi;
+	@Column(name = "QUESTION_ABOUT")
+	private String questionAbout;
 
 	public QuestionsView() {
 	}
@@ -60,19 +57,11 @@ public class QuestionsView {
 		this.attributePosition = attributePosition;
 	}
 
-	public String getQuestionAboutInApi() {
-		return questionAboutInApi;
+	public String getQuestionAbout() {
+		return questionAbout;
 	}
 
-	public void setQuestionAboutInApi(String questionAboutInApi) {
-		this.questionAboutInApi = questionAboutInApi;
-	}
-
-	public String getQuestionContextInApi() {
-		return questionContextInApi;
-	}
-
-	public void setQuestionContextInApi(String questionContextInApi) {
-		this.questionContextInApi = questionContextInApi;
+	public void setQuestionAbout(String questionAbout) {
+		this.questionAbout = questionAbout;
 	}
 }

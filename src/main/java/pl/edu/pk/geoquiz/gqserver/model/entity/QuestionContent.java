@@ -1,4 +1,4 @@
-package pl.edu.pk.geoquiz.gqserver.model;
+package pl.edu.pk.geoquiz.gqserver.model.entity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public class QuestionContent {
 
 	@Id
-	@Column(name = "ID", nullable = false, length = 10)
+	@Column(name = "ID", nullable = false)
 	@GeneratedValue(generator = "qContent_seq")
 	@SequenceGenerator(name = "qContent_seq", sequenceName = "QUESTION_CONTENT_SEQ", allocationSize = 1)
 	private Integer id;

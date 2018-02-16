@@ -5,7 +5,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.edu.pk.geoquiz.gqserver.model.QuestionContent;
+import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionContent;
 import pl.edu.pk.geoquiz.gqserver.repository.QuestionContentRepository;
 
 import java.net.URI;

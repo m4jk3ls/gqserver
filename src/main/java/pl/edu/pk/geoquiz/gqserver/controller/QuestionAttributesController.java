@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.edu.pk.geoquiz.gqserver.model.QuestionAttributes;
-import pl.edu.pk.geoquiz.gqserver.model.QuestionContent;
+import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionAttributes;
+import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionContent;
 import pl.edu.pk.geoquiz.gqserver.repository.QuestionAttributesRepository;
 import pl.edu.pk.geoquiz.gqserver.repository.QuestionContentRepository;
 

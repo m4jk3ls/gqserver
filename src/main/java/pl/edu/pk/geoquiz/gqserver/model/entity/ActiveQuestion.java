@@ -1,4 +1,4 @@
-package pl.edu.pk.geoquiz.gqserver.model;
+package pl.edu.pk.geoquiz.gqserver.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

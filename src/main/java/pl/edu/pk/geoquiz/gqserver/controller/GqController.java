@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.pk.geoquiz.gqserver.repository.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Random;
+
 @RestController
 @RequestMapping("/geoquiz")
 public class GqController {
@@ -17,6 +21,10 @@ public class GqController {
 
 	@GetMapping(path="/question")
 	public void getQuestion(){
+		List<BigDecimal> ids = qViewRepo.findAllIds();
+		Random rand = new Random();
+		BigDecimal randomId = ids.get(rand.nextInt(ids.size()));
+		System.out.println(randomId);
 	}
 
 	@PostMapping(path="/question/answer")

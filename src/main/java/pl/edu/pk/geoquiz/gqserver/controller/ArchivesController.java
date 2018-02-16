@@ -3,7 +3,7 @@ package pl.edu.pk.geoquiz.gqserver.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.pk.geoquiz.gqserver.model.Archives;
+import pl.edu.pk.geoquiz.gqserver.model.entity.Archives;
 import pl.edu.pk.geoquiz.gqserver.repository.ArchivesRepository;
 
 import java.util.Optional;

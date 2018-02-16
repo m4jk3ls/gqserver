@@ -3,8 +3,8 @@ package pl.edu.pk.geoquiz.gqserver.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.pk.geoquiz.gqserver.model.ActiveQuestion;
-import pl.edu.pk.geoquiz.gqserver.model.QuestionAttributes;
+import pl.edu.pk.geoquiz.gqserver.model.entity.ActiveQuestion;
+import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionAttributes;
 import pl.edu.pk.geoquiz.gqserver.repository.ActiveQuestionRepository;
 import pl.edu.pk.geoquiz.gqserver.repository.QuestionAttributesRepository;
 
