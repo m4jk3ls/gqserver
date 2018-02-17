@@ -1,11 +1,11 @@
 package pl.edu.pk.geoquiz.gqserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.edu.pk.geoquiz.gqserver.model.AnswerRequest;
+import pl.edu.pk.geoquiz.gqserver.model.AnswerResponse;
 import pl.edu.pk.geoquiz.gqserver.model.QuestionResponse;
+import pl.edu.pk.geoquiz.gqserver.model.entity.ActiveQuestion;
 import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionsView;
 import pl.edu.pk.geoquiz.gqserver.repository.*;
 
@@ -55,7 +55,31 @@ public class GqController {
 	}
 
 	@PostMapping(path = "/question/answer")
-	public void postAnswer() {
+	public AnswerResponse postAnswer(@RequestBody AnswerRequest answerRequest) {
+
+		Optional<ActiveQuestion> activeQuestionOptional = activeQRepo.findById(answerRequest.getToken());
+		if (!activeQuestionOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+
+		AnswerResponse answerResponse = new AnswerResponse();
+		ActiveQuestion activeQuestion = activeQuestionOptional.get();
+
+		if (Integer.toString(answerRequest.getUserAnswer().hashCode()).equals(activeQuestion.getAnswer())) {
+			answerResponse.setCorrect(true);
+			answerResponse.setCorrectAnswer(answerRequest.getUserAnswer());
+		} else {
+			answerResponse.setCorrect(false);
+			List<String> possibleAnswers = answerRequest.getPossibleAnswers();
+			for (String curr : possibleAnswers) {
+				if (Integer.toString(curr.hashCode()).equals(activeQuestion.getAnswer())) {
+					answerResponse.setCorrectAnswer(curr);
+				}
+			}
+		}
+
+		return answerResponse;
 	}
 
 	@Autowired

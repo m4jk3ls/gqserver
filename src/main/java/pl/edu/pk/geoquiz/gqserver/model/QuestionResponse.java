@@ -9,6 +9,9 @@ public class QuestionResponse {
 	private List<String> possibleAnswers;
 	private String countryToShow;
 
+	public QuestionResponse() {
+	}
+
 	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow) {
 		this.token = token;
 		this.fullQuestion = fullQuestion;

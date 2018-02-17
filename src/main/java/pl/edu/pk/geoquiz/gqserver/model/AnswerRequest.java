@@ -1,9 +1,12 @@
 package pl.edu.pk.geoquiz.gqserver.model;
 
+import java.util.List;
+
 public class AnswerRequest {
 
 	private String token;
-	private String answer;
+	private String userAnswer;
+	private List<String> possibleAnswers;
 
 	public AnswerRequest() {
 	}
@@ -16,11 +19,19 @@ public class AnswerRequest {
 		this.token = token;
 	}
 
-	public String getAnswer() {
-		return answer;
+	public String getUserAnswer() {
+		return userAnswer;
 	}
 
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public void setUserAnswer(String userAnswer) {
+		this.userAnswer = userAnswer;
+	}
+
+	public List<String> getPossibleAnswers() {
+		return possibleAnswers;
+	}
+
+	public void setPossibleAnswers(List<String> possibleAnswers) {
+		this.possibleAnswers = possibleAnswers;
 	}
 }
