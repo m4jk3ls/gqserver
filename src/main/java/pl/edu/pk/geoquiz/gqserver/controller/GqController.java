@@ -26,7 +26,7 @@ public class GqController {
 	@GetMapping(path = "/question")
 	public QuestionResponse getQuestion() {
 
-		// Select random question
+		/*// Select random question
 		List<BigDecimal> ids = qViewRepo.findAllIds();
 		Integer questionId = ids.get(new Random().nextInt(ids.size())).toBigInteger().intValueExact();
 
@@ -51,7 +51,16 @@ public class GqController {
 		List<String> possibleAnswers = Arrays.asList("Answer A", "Answer B", "Answer C", "Answer D");
 		String countryToShow = "Poland";
 
-		return new QuestionResponse(token, fullQuestion, possibleAnswers, countryToShow);
+		return new QuestionResponse(token, fullQuestion, possibleAnswers, countryToShow);*/
+
+		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
+		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
+		Optional<QuestionsView> questionAttribOptional = qViewRepo.findById(questionId);
+		if (!questionAttribOptional.isPresent()) {
+			return null;
+		}
+		QuestionsView questionAttrib = questionAttribOptional.get();
+		return null;
 	}
 
 	@PostMapping(path = "/question/answer")
