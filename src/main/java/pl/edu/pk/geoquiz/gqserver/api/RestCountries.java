@@ -4,9 +4,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RestCountries {
 
@@ -25,10 +23,39 @@ public class RestCountries {
 	public RestCountries() {
 	}
 
-	public List<Map<String, Object>> getData(String field) {
+	public List<Map<String, String>> getCountriesWithSpecificField(String field, int numberOfCountries) {
+		String secondField = null;
+		if (field.contains("|")) {
+			secondField = field.substring(field.indexOf("|") + 1);
+			field = field.substring(0, field.indexOf("|"));
+		}
 		String url = MAIN_URL + "/all?fields=name;" + field;
-		List<Map<String, Object>> apiResult = REST_TEMPLATE.exchange(url, HttpMethod.GET, ENTITY, new ParameterizedTypeReference<List<Map<String, Object>>>() {
+		List<Map<String, Object>> allCountries = REST_TEMPLATE.exchange(url, HttpMethod.GET, ENTITY, new ParameterizedTypeReference<List<Map<String, Object>>>() {
 		}).getBody();
-		return apiResult;
+
+		List<Map<String, String>> randomCountries = new ArrayList<>();
+		do {
+			Map<String, Object> firstCountry = allCountries.get(new Random().nextInt(allCountries.size()));
+			Map<String, String> mapToInsert = new HashMap<>();
+			mapToInsert.put("name", (String) firstCountry.get("name"));
+
+			if (firstCountry.get(field) instanceof List && !((List) firstCountry.get(field)).isEmpty() && firstCountry.get(field) != null && secondField != null) {
+				List<Map<String, String>> firstCountryFieldHowList = (List<Map<String, String>>) firstCountry.get(field);
+				Map<String, String> randomMap = firstCountryFieldHowList.get(new Random().nextInt(firstCountryFieldHowList.size()));
+				mapToInsert.put(field, randomMap.get(secondField));
+				randomCountries.add(mapToInsert);
+			} else if (!(firstCountry.get(field) instanceof List) && firstCountry.get(field) != null && secondField == null) {
+				mapToInsert.put(field, (String) firstCountry.get(field));
+				randomCountries.add(mapToInsert);
+			}
+		} while (randomCountries.isEmpty());
+
+		/*Teraz trzeba bedzie losowac randomowy kraj, nastepnie sprawdzac, czy jego nazwa nie duplikuje sie z nazwa juz istniejaca w liscie randomCountries.
+		 * Jesli warunek zostanie spelniony, to kolejnym krokiem bedzie sprawdzenie kazdego np. jezyka nowo wylosowanego panstwa, czy aby nie duplikuje sie
+		 * z juz isniejacym w randomCountries. Jesli drugi z wymienionych warunkow jest spelniony, to wylosowane panstwo wraz np. ze swoim jezykem nadaje
+		 * sie do wstawienia do listy randomCountries. Jesli proba znalezienia takiego panstwa zakonczy sie fiaskiem, to nie robic nic i wylosowac nowe
+		 * panstwo (analogicznie do powyzszej konstrukcji, ktora szuka pierwszego panstwa do listy randomCountries).*/
+
+		return randomCountries;
 	}
 }

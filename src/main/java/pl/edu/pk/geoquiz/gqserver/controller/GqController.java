@@ -10,10 +10,7 @@ import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionsView;
 import pl.edu.pk.geoquiz.gqserver.repository.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/geoquiz")
@@ -21,6 +18,7 @@ public class GqController {
 
 	private ActiveQuestionRepository activeQRepo;
 	private ArchivesRepository archivesRepo;
+	private QuestionAttributesRepository qAttribRepo;
 	private QuestionsViewRepository qViewRepo;
 
 	@GetMapping(path = "/question")
@@ -55,11 +53,15 @@ public class GqController {
 
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
 		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
-		Optional<QuestionsView> questionAttribOptional = qViewRepo.findById(questionId);
-		if (!questionAttribOptional.isPresent()) {
+		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
+		if (!questionViewOptional.isPresent()) {
 			return null;
 		}
-		QuestionsView questionAttrib = questionAttribOptional.get();
+		QuestionsView questionView = questionViewOptional.get();
+
+		/*Tutaj trzeba bedzie odebrac z klasy RestCountries wyniki, ktore przychodza nam z API, odpowiednio posklejac pelne pytanie,
+		 * wykonac insert na tabeli z aktywnymi pytaniami i przygotowac odpowiedz dla klienta.*/
+
 		return null;
 	}
 
@@ -91,6 +93,15 @@ public class GqController {
 		return answerResponse;
 	}
 
+	private String getToken() {
+		String chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ1234567890";
+		StringBuilder tokenBuilder = new StringBuilder(ActiveQuestion.getTokenLength());
+		for (int i = 0; i < ActiveQuestion.getTokenLength(); i++) {
+			tokenBuilder.append(chars.charAt(new Random().nextInt(chars.length())));
+		}
+		return tokenBuilder.toString();
+	}
+
 	@Autowired
 	public void setActiveQRepo(ActiveQuestionRepository activeQRepo) {
 		this.activeQRepo = activeQRepo;
@@ -99,6 +110,11 @@ public class GqController {
 	@Autowired
 	public void setArchivesRepo(ArchivesRepository archivesRepo) {
 		this.archivesRepo = archivesRepo;
+	}
+
+	@Autowired
+	public void setqAttribRepo(QuestionAttributesRepository qAttribRepo) {
+		this.qAttribRepo = qAttribRepo;
 	}
 
 	@Autowired
