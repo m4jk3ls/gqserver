@@ -2,14 +2,17 @@ package pl.edu.pk.geoquiz.gqserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.pk.geoquiz.gqserver.api.RestCountries;
 import pl.edu.pk.geoquiz.gqserver.model.AnswerRequest;
 import pl.edu.pk.geoquiz.gqserver.model.AnswerResponse;
 import pl.edu.pk.geoquiz.gqserver.model.QuestionResponse;
 import pl.edu.pk.geoquiz.gqserver.model.entity.ActiveQuestion;
+import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionAttributes;
 import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionsView;
 import pl.edu.pk.geoquiz.gqserver.repository.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -24,45 +27,50 @@ public class GqController {
 	@GetMapping(path = "/question")
 	public QuestionResponse getQuestion() {
 
-		/*// Select random question
-		List<BigDecimal> ids = qViewRepo.findAllIds();
-		Integer questionId = ids.get(new Random().nextInt(ids.size())).toBigInteger().intValueExact();
-
-		Optional<QuestionsView> questionComponentsOptional = qViewRepo.findById(questionId);
-		if (!questionComponentsOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
-		}
-		// Full question
-		QuestionsView questionComponents = questionComponentsOptional.get();
-		String fullQuestion = questionComponents.getContent().replaceFirst("<\\?>", questionComponents.getAttribute()).replaceFirst("<\\?>", "Poland");
-
-		// Token
-		String chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ1234567890";
-		StringBuilder tokenBuilder = new StringBuilder(100);
-		for (int i = 0; i < 100; i++) {
-			tokenBuilder.append(chars.charAt(new Random().nextInt(chars.length())));
-		}
-		String token = tokenBuilder.toString();
-
-		// Others
-		List<String> possibleAnswers = Arrays.asList("Answer A", "Answer B", "Answer C", "Answer D");
-		String countryToShow = "Poland";
-
-		return new QuestionResponse(token, fullQuestion, possibleAnswers, countryToShow);*/
-
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
 		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
 		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
 		if (!questionViewOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
 			return null;
 		}
 		QuestionsView questionView = questionViewOptional.get();
+		String qAbout = questionView.getQuestionAbout();
 
-		/*Tutaj trzeba bedzie odebrac z klasy RestCountries wyniki, ktore przychodza nam z API, odpowiednio posklejac pelne pytanie,
-		 * wykonac insert na tabeli z aktywnymi pytaniami i przygotowac odpowiedz dla klienta.*/
+		RestCountries restCountries = new RestCountries();
+		List<Map<String, String>> countryAndAnswer = restCountries.getCountriesWithSpecificField(qAbout, 4);
 
-		return null;
+		String token = getToken();
+		int index = new Random().nextInt(countryAndAnswer.size());
+		String country = countryAndAnswer.get(index).get("name");
+		String fullQuestion = questionView.getContent().replaceFirst("<\\?>", questionView.getAttribute()).replaceFirst("<\\?>", country);
+		String answer = null;
+		List<String> possibleAnswers = new ArrayList<>();
+		for (int i = 0; i < countryAndAnswer.size(); i++) {
+			if (qAbout.contains("|") && i == index) {
+				answer = countryAndAnswer.get(i).get(qAbout.substring(0, qAbout.indexOf("|")));
+				possibleAnswers.add(answer);
+			} else if (qAbout.contains("|") && i != index) {
+				possibleAnswers.add(countryAndAnswer.get(i).get(qAbout.substring(0, qAbout.indexOf("|"))));
+			} else if (!qAbout.contains("|") && i == index) {
+				answer = countryAndAnswer.get(i).get(qAbout);
+				possibleAnswers.add(answer);
+			} else {
+				possibleAnswers.add(countryAndAnswer.get(i).get(qAbout));
+			}
+		}
+		String answerHash = Integer.toString(Objects.requireNonNull(answer).hashCode());
+
+		ActiveQuestion aQuestion = new ActiveQuestion(token, answerHash, new Timestamp(new Date().getTime()));
+		Optional<QuestionAttributes> qAttribOptional = qAttribRepo.findById(questionView.getId());
+		if (!qAttribOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+		aQuestion.setQuestionAttributes(qAttribOptional.get());
+		activeQRepo.save(aQuestion);
+
+		return new QuestionResponse(token, fullQuestion, possibleAnswers, country);
 	}
 
 	@PostMapping(path = "/question/answer")
