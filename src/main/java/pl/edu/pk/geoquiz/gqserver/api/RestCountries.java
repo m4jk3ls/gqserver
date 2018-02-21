@@ -105,6 +105,7 @@ public class RestCountries {
 						}
 						if (isValid) {
 							save(answersForCheck, curr1, anotherCountry.get("name").toString(), field, randomCountries);
+							break;
 						}
 					}
 				}
@@ -142,8 +143,8 @@ public class RestCountries {
 	}
 
 	private boolean isFieldListOfStringsWithContent(Map<String, Object> map, String key) {
-		return (map.get(key) instanceof List && !((List) map.get(key)).isEmpty() &&
-				map.get(key) != null && ((List) map.get(key)).get(0) instanceof String);
+		return (map.get(key) instanceof List && !((List) map.get(key)).isEmpty() && map.get(key) != null &&
+				((List) map.get(key)).get(0) instanceof String && ((List) map.get(key)).get(0).toString() != null);
 	}
 
 	private boolean isntFieldList(Map<String, Object> map, String key) {

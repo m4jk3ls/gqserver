@@ -28,7 +28,7 @@ public class GqController {
 	public QuestionResponse getQuestion() {
 
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
-		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
+		Integer questionId = 10;//allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
 		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
 		if (!questionViewOptional.isPresent()) {
 			// Tutaj powinno chyba byc rzucenie wyjatku
