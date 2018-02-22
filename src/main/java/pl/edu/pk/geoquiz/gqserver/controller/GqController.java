@@ -7,6 +7,7 @@ import pl.edu.pk.geoquiz.gqserver.model.AnswerRequest;
 import pl.edu.pk.geoquiz.gqserver.model.AnswerResponse;
 import pl.edu.pk.geoquiz.gqserver.model.QuestionResponse;
 import pl.edu.pk.geoquiz.gqserver.model.entity.ActiveQuestion;
+import pl.edu.pk.geoquiz.gqserver.model.entity.Archives;
 import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionAttributes;
 import pl.edu.pk.geoquiz.gqserver.model.entity.QuestionsView;
 import pl.edu.pk.geoquiz.gqserver.repository.*;
@@ -28,7 +29,7 @@ public class GqController {
 	public QuestionResponse getQuestion() {
 
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
-		Integer questionId = 10;//allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
+		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
 		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
 		if (!questionViewOptional.isPresent()) {
 			// Tutaj powinno chyba byc rzucenie wyjatku
@@ -81,14 +82,24 @@ public class GqController {
 			// Tutaj powinno chyba byc rzucenie wyjatku
 			return null;
 		}
-
-		AnswerResponse answerResponse = new AnswerResponse();
 		ActiveQuestion activeQuestion = activeQuestionOptional.get();
 
+		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(activeQuestion.getQuestionAttributes().getId());
+		if (!archivesOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+		Archives archives = archivesOptional.get();
+
+		AnswerResponse answerResponse = new AnswerResponse();
 		if (Integer.toString(answerRequest.getUserAnswer().hashCode()).equals(activeQuestion.getAnswer())) {
+			archives.setGoodAnswers(archives.getGoodAnswers() + 1);
+			archivesRepo.save(archives);
 			answerResponse.setCorrect(true);
 			answerResponse.setCorrectAnswer(answerRequest.getUserAnswer());
 		} else {
+			archives.setBadAnswers(archives.getBadAnswers() + 1);
+			archivesRepo.save(archives);
 			answerResponse.setCorrect(false);
 			List<String> possibleAnswers = answerRequest.getPossibleAnswers();
 			for (String curr : possibleAnswers) {
@@ -97,7 +108,7 @@ public class GqController {
 				}
 			}
 		}
-
+		activeQRepo.delete(activeQuestion);
 		return answerResponse;
 	}
 

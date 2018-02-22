@@ -16,7 +16,7 @@ public class QuestionAttributes {
 	private Integer id;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private QuestionContent questionContent;
 
 	@OneToMany(mappedBy = "questionAttributes")

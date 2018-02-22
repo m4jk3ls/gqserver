@@ -15,7 +15,7 @@ public class Archives {
 	private Integer id;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private QuestionAttributes questionAttributes;
 
 	@Column(name = "GOOD_ANSWERS", nullable = false, columnDefinition = "NUMBER DEFAULT 0 NOT NULL")
