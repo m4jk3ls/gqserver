@@ -8,15 +8,19 @@ public class QuestionResponse {
 	private String fullQuestion;
 	private List<String> possibleAnswers;
 	private String countryToShow;
+	private int goodAnswers;
+	private int badAnswers;
 
 	public QuestionResponse() {
 	}
 
-	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow) {
+	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow, int goodAnswers, int badAnswers) {
 		this.token = token;
 		this.fullQuestion = fullQuestion;
 		this.possibleAnswers = possibleAnswers;
 		this.countryToShow = countryToShow;
+		this.goodAnswers = goodAnswers;
+		this.badAnswers = badAnswers;
 	}
 
 	public String getToken() {
@@ -51,6 +55,22 @@ public class QuestionResponse {
 		this.countryToShow = countryToShow;
 	}
 
+	public int getGoodAnswers() {
+		return goodAnswers;
+	}
+
+	public void setGoodAnswers(int goodAnswers) {
+		this.goodAnswers = goodAnswers;
+	}
+
+	public int getBadAnswers() {
+		return badAnswers;
+	}
+
+	public void setBadAnswers(int badAnswers) {
+		this.badAnswers = badAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "QuestionResponse{" +
@@ -58,6 +78,8 @@ public class QuestionResponse {
 				", fullQuestion='" + fullQuestion + '\'' +
 				", possibleAnswers=" + possibleAnswers +
 				", countryToShow='" + countryToShow + '\'' +
+				", goodAnswers=" + goodAnswers +
+				", badAnswers=" + badAnswers +
 				'}';
 	}
 }

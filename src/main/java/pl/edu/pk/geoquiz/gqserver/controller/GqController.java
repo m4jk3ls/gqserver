@@ -25,11 +25,34 @@ public class GqController {
 	private QuestionAttributesRepository qAttribRepo;
 	private QuestionsViewRepository qViewRepo;
 
+	@GetMapping(path = "/question/{token}")
+	public Map<String, Integer> getStats(@PathVariable String token) {
+
+		Optional<ActiveQuestion> activeQuestionOptional = activeQRepo.findById(token);
+		if (!activeQuestionOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+		ActiveQuestion activeQuestion = activeQuestionOptional.get();
+
+		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(activeQuestion.getQuestionAttributes().getId());
+		if (!archivesOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+		Archives archives = archivesOptional.get();
+
+		Map<String, Integer> stats = new HashMap<>();
+		stats.put("goodAnswers", archives.getGoodAnswers());
+		stats.put("badAnswers", archives.getBadAnswers());
+		return stats;
+	}
+
 	@GetMapping(path = "/question")
 	public QuestionResponse getQuestion() {
 
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
-		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
+		Integer questionId = 5;//allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
 		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
 		if (!questionViewOptional.isPresent()) {
 			// Tutaj powinno chyba byc rzucenie wyjatku
@@ -68,10 +91,18 @@ public class GqController {
 			// Tutaj powinno chyba byc rzucenie wyjatku
 			return null;
 		}
-		aQuestion.setQuestionAttributes(qAttribOptional.get());
+		QuestionAttributes aAttrib = qAttribOptional.get();
+		aQuestion.setQuestionAttributes(aAttrib);
 		activeQRepo.save(aQuestion);
 
-		return new QuestionResponse(token, fullQuestion, possibleAnswers, country);
+		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(aQuestion.getQuestionAttributes().getId());
+		if (!archivesOptional.isPresent()) {
+			// Tutaj powinno chyba byc rzucenie wyjatku
+			return null;
+		}
+		Archives archives = archivesOptional.get();
+
+		return new QuestionResponse(token, fullQuestion, possibleAnswers, country, archives.getGoodAnswers(), archives.getBadAnswers());
 	}
 
 	@PostMapping(path = "/question/answer")
