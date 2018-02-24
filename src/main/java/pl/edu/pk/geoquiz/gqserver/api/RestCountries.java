@@ -50,6 +50,9 @@ public class RestCountries {
 				randomCountries.add(mapToInsert);
 			} else if (isFieldListOfStringsWithContent(firstCountry, field) && secondField == null) {
 				List<String> firstCountryFieldHowStringList = (List<String>) firstCountry.get(field);
+				if (field.equals("borders")) {
+					fromAlphaCodesToFullCountriesNames(firstCountryFieldHowStringList);
+				}
 				answersForCheck.addAll(firstCountryFieldHowStringList);
 				mapToInsert.put(field, firstCountryFieldHowStringList.get(new Random().nextInt(firstCountryFieldHowStringList.size())));
 				randomCountries.add(mapToInsert);
@@ -96,6 +99,9 @@ public class RestCountries {
 				}
 				if (uniqueCountryName) {
 					List<String> anotherCountryFieldHowStringList = (List<String>) anotherCountry.get(field);
+					if (field.equals("borders")) {
+						fromAlphaCodesToFullCountriesNames(anotherCountryFieldHowStringList);
+					}
 					for (String curr1 : anotherCountryFieldHowStringList) {
 						boolean isValid = true;
 						for (String curr2 : answersForCheck) {
@@ -126,6 +132,31 @@ public class RestCountries {
 			}
 		}
 		return randomCountries;
+	}
+
+	private void fromAlphaCodesToFullCountriesNames(List<String> alphaCodes) {
+		String url = MAIN_URL;
+		StringBuilder urlBuilder = new StringBuilder(url);
+		urlBuilder.append("/alpha?codes=");
+		for (String curr : alphaCodes) {
+			urlBuilder.append(curr.toLowerCase()).append(";");
+		}
+		urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+		url = urlBuilder.toString();
+
+		List<Map<String, Object>> mapList = REST_TEMPLATE.exchange(url, HttpMethod.GET, ENTITY, new ParameterizedTypeReference<List<Map<String, Object>>>() {
+		}).getBody();
+
+		ListIterator<String> it = alphaCodes.listIterator();
+		while (it.hasNext()) {
+			String currAlphaCode = it.next();
+			for (Map<String, Object> currMap : mapList) {
+				if (currAlphaCode.equals(currMap.get("alpha3Code"))) {
+					it.set((String) currMap.get("name"));
+					break;
+				}
+			}
+		}
 	}
 
 	private void save(List<String> answersForCheck, String answerToSave, String countryName,
