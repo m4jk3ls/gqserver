@@ -8,13 +8,13 @@ public class QuestionResponse {
 	private String fullQuestion;
 	private List<String> possibleAnswers;
 	private String countryToShow;
-	private int goodAnswers;
-	private int badAnswers;
+	private String goodAnswers;
+	private String badAnswers;
 
 	public QuestionResponse() {
 	}
 
-	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow, int goodAnswers, int badAnswers) {
+	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow, String goodAnswers, String badAnswers) {
 		this.token = token;
 		this.fullQuestion = fullQuestion;
 		this.possibleAnswers = possibleAnswers;
@@ -55,19 +55,19 @@ public class QuestionResponse {
 		this.countryToShow = countryToShow;
 	}
 
-	public int getGoodAnswers() {
+	public String getGoodAnswers() {
 		return goodAnswers;
 	}
 
-	public void setGoodAnswers(int goodAnswers) {
+	public void setGoodAnswers(String goodAnswers) {
 		this.goodAnswers = goodAnswers;
 	}
 
-	public int getBadAnswers() {
+	public String getBadAnswers() {
 		return badAnswers;
 	}
 
-	public void setBadAnswers(int badAnswers) {
+	public void setBadAnswers(String badAnswers) {
 		this.badAnswers = badAnswers;
 	}
 

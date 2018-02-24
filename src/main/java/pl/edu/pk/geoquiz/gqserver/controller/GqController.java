@@ -3,6 +3,8 @@ package pl.edu.pk.geoquiz.gqserver.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pk.geoquiz.gqserver.api.RestCountries;
+import pl.edu.pk.geoquiz.gqserver.exception.NoQuestionsInDatabaseException;
+import pl.edu.pk.geoquiz.gqserver.exception.QuestionExpiredException;
 import pl.edu.pk.geoquiz.gqserver.model.AnswerRequest;
 import pl.edu.pk.geoquiz.gqserver.model.AnswerResponse;
 import pl.edu.pk.geoquiz.gqserver.model.QuestionResponse;
@@ -26,25 +28,25 @@ public class GqController {
 	private QuestionsViewRepository qViewRepo;
 
 	@GetMapping(path = "/question/{token}")
-	public Map<String, Integer> getStats(@PathVariable String token) {
+	public Map<String, String> getStats(@PathVariable String token) {
 
+		Map<String, String> stats = new HashMap<>();
 		Optional<ActiveQuestion> activeQuestionOptional = activeQRepo.findById(token);
 		if (!activeQuestionOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
+			stats.put("goodAnswers", "-");
+			stats.put("badAnswers", "-");
+		} else {
+			ActiveQuestion activeQuestion = activeQuestionOptional.get();
+			Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(activeQuestion.getQuestionAttributes().getId());
+			if (!archivesOptional.isPresent()) {
+				stats.put("goodAnswers", "-");
+				stats.put("badAnswers", "-");
+			} else {
+				Archives archives = archivesOptional.get();
+				stats.put("goodAnswers", Integer.toString(archives.getGoodAnswers()));
+				stats.put("badAnswers", Integer.toString(archives.getBadAnswers()));
+			}
 		}
-		ActiveQuestion activeQuestion = activeQuestionOptional.get();
-
-		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(activeQuestion.getQuestionAttributes().getId());
-		if (!archivesOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
-		}
-		Archives archives = archivesOptional.get();
-
-		Map<String, Integer> stats = new HashMap<>();
-		stats.put("goodAnswers", archives.getGoodAnswers());
-		stats.put("badAnswers", archives.getBadAnswers());
 		return stats;
 	}
 
@@ -52,10 +54,12 @@ public class GqController {
 	public QuestionResponse getQuestion() {
 
 		List<BigDecimal> allQuestionIds = qViewRepo.findAllIds();
-		Integer questionId = 5;//allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
+		if (allQuestionIds.isEmpty()) {
+			throw new NoQuestionsInDatabaseException("There are no questions in database. Try again later...");
+		}
+		Integer questionId = allQuestionIds.get(new Random().nextInt(allQuestionIds.size())).toBigInteger().intValueExact();
 		Optional<QuestionsView> questionViewOptional = qViewRepo.findById(questionId);
 		if (!questionViewOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
 			return null;
 		}
 		QuestionsView questionView = questionViewOptional.get();
@@ -87,22 +91,20 @@ public class GqController {
 
 		ActiveQuestion aQuestion = new ActiveQuestion(token, answerHash, new Timestamp(new Date().getTime()));
 		Optional<QuestionAttributes> qAttribOptional = qAttribRepo.findById(questionView.getId());
-		if (!qAttribOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
-		}
-		QuestionAttributes aAttrib = qAttribOptional.get();
-		aQuestion.setQuestionAttributes(aAttrib);
-		activeQRepo.save(aQuestion);
 
-		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(aQuestion.getQuestionAttributes().getId());
-		if (!archivesOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
+		if (qAttribOptional.isPresent()) {
+			QuestionAttributes aAttrib = qAttribOptional.get();
+			aQuestion.setQuestionAttributes(aAttrib);
+			activeQRepo.save(aQuestion);
+			Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(aQuestion.getQuestionAttributes().getId());
+			if (archivesOptional.isPresent()) {
+				Archives archives = archivesOptional.get();
+				return new QuestionResponse(token, fullQuestion, possibleAnswers, country,
+						Integer.toString(archives.getGoodAnswers()), Integer.toString(archives.getBadAnswers()));
+			}
+			return new QuestionResponse(token, fullQuestion, possibleAnswers, country, "-", "-");
 		}
-		Archives archives = archivesOptional.get();
-
-		return new QuestionResponse(token, fullQuestion, possibleAnswers, country, archives.getGoodAnswers(), archives.getBadAnswers());
+		return null;
 	}
 
 	@PostMapping(path = "/question/answer")
@@ -110,27 +112,26 @@ public class GqController {
 
 		Optional<ActiveQuestion> activeQuestionOptional = activeQRepo.findById(answerRequest.getToken());
 		if (!activeQuestionOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
+			throw new QuestionExpiredException("Question expired...");
 		}
 		ActiveQuestion activeQuestion = activeQuestionOptional.get();
-
 		Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(activeQuestion.getQuestionAttributes().getId());
-		if (!archivesOptional.isPresent()) {
-			// Tutaj powinno chyba byc rzucenie wyjatku
-			return null;
-		}
-		Archives archives = archivesOptional.get();
-
 		AnswerResponse answerResponse = new AnswerResponse();
+
 		if (Integer.toString(answerRequest.getUserAnswer().hashCode()).equals(activeQuestion.getAnswer())) {
-			archives.setGoodAnswers(archives.getGoodAnswers() + 1);
-			archivesRepo.save(archives);
+			if (archivesOptional.isPresent()) {
+				Archives archives = archivesOptional.get();
+				archives.setGoodAnswers(archives.getGoodAnswers() + 1);
+				archivesRepo.save(archives);
+			}
 			answerResponse.setCorrect(true);
 			answerResponse.setCorrectAnswer(answerRequest.getUserAnswer());
 		} else {
-			archives.setBadAnswers(archives.getBadAnswers() + 1);
-			archivesRepo.save(archives);
+			if (archivesOptional.isPresent()) {
+				Archives archives = archivesOptional.get();
+				archives.setBadAnswers(archives.getBadAnswers() + 1);
+				archivesRepo.save(archives);
+			}
 			answerResponse.setCorrect(false);
 			List<String> possibleAnswers = answerRequest.getPossibleAnswers();
 			for (String curr : possibleAnswers) {
