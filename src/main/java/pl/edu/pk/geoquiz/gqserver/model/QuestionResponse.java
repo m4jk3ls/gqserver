@@ -7,18 +7,20 @@ public class QuestionResponse {
 	private String token;
 	private String fullQuestion;
 	private List<String> possibleAnswers;
-	private String countryToShow;
+	private String countryName;
+	private String countryAlpha2Code;
 	private String goodAnswers;
 	private String badAnswers;
 
 	public QuestionResponse() {
 	}
 
-	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryToShow, String goodAnswers, String badAnswers) {
+	public QuestionResponse(String token, String fullQuestion, List<String> possibleAnswers, String countryName, String countryAlpha2Code, String goodAnswers, String badAnswers) {
 		this.token = token;
 		this.fullQuestion = fullQuestion;
 		this.possibleAnswers = possibleAnswers;
-		this.countryToShow = countryToShow;
+		this.countryName = countryName;
+		this.countryAlpha2Code = countryAlpha2Code;
 		this.goodAnswers = goodAnswers;
 		this.badAnswers = badAnswers;
 	}
@@ -47,12 +49,20 @@ public class QuestionResponse {
 		this.possibleAnswers = possibleAnswers;
 	}
 
-	public String getCountryToShow() {
-		return countryToShow;
+	public String getCountryName() {
+		return countryName;
 	}
 
-	public void setCountryToShow(String countryToShow) {
-		this.countryToShow = countryToShow;
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	public String getCountryAlpha2Code() {
+		return countryAlpha2Code;
+	}
+
+	public void setCountryAlpha2Code(String countryAlpha2Code) {
+		this.countryAlpha2Code = countryAlpha2Code;
 	}
 
 	public String getGoodAnswers() {
@@ -77,7 +87,7 @@ public class QuestionResponse {
 				"token='" + token + '\'' +
 				", fullQuestion='" + fullQuestion + '\'' +
 				", possibleAnswers=" + possibleAnswers +
-				", countryToShow='" + countryToShow + '\'' +
+				", countryName='" + countryName + '\'' +
 				", goodAnswers=" + goodAnswers +
 				", badAnswers=" + badAnswers +
 				'}';

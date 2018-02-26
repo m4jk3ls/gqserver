@@ -29,7 +29,7 @@ public class RestCountries {
 			secondField = field.substring(field.indexOf("|") + 1);
 			field = field.substring(0, field.indexOf("|"));
 		}
-		String url = MAIN_URL + "/all?fields=name;" + field;
+		String url = MAIN_URL + "/all?fields=name;alpha2Code;" + field;
 		List<Map<String, Object>> allCountries = REST_TEMPLATE.exchange(url, HttpMethod.GET, ENTITY, new ParameterizedTypeReference<List<Map<String, Object>>>() {
 		}).getBody();
 
@@ -39,6 +39,7 @@ public class RestCountries {
 			Map<String, Object> firstCountry = allCountries.get(new Random().nextInt(allCountries.size()));
 			Map<String, String> mapToInsert = new HashMap<>();
 			mapToInsert.put("name", firstCountry.get("name").toString());
+			mapToInsert.put("alpha2Code", firstCountry.get("alpha2Code").toString());
 
 			if (isFieldListOfMapsWithContent(firstCountry, field) && secondField != null) {
 				List<Map<String, String>> firstCountryFieldHowMapList = (List<Map<String, String>>) firstCountry.get(field);
@@ -82,18 +83,21 @@ public class RestCountries {
 				if (potentialCandidate != null) {
 					boolean uniqueCountryName = true;
 					for (Map<String, String> currCountry : randomCountries) {
-						if (anotherCountry.get("name").equals(currCountry.get("name"))) {
+						if (anotherCountry.get("name").equals(currCountry.get("name")) ||
+								anotherCountry.get("alpha2Code").equals(currCountry.get("alpha2Code"))) {
 							uniqueCountryName = false;
 						}
 					}
 					if (uniqueCountryName) {
-						save(answersForCheck, potentialCandidate, anotherCountry.get("name").toString(), field, randomCountries);
+						save(answersForCheck, potentialCandidate, anotherCountry.get("name").toString(),
+								anotherCountry.get("alpha2Code").toString(), field, randomCountries);
 					}
 				}
 			} else if (isFieldListOfStringsWithContent(anotherCountry, field) && secondField == null) {
 				boolean uniqueCountryName = true;
 				for (Map<String, String> currCountry : randomCountries) {
-					if (anotherCountry.get("name").equals(currCountry.get("name"))) {
+					if (anotherCountry.get("name").equals(currCountry.get("name")) ||
+							anotherCountry.get("alpha2Code").equals(currCountry.get("alpha2Code"))) {
 						uniqueCountryName = false;
 					}
 				}
@@ -110,7 +114,8 @@ public class RestCountries {
 							}
 						}
 						if (isValid) {
-							save(answersForCheck, curr1, anotherCountry.get("name").toString(), field, randomCountries);
+							save(answersForCheck, curr1, anotherCountry.get("name").toString(),
+									anotherCountry.get("alpha2Code").toString(), field, randomCountries);
 							break;
 						}
 					}
@@ -118,11 +123,13 @@ public class RestCountries {
 			} else if (isntFieldList(anotherCountry, field) && secondField == null) {
 				Map<String, String> potentialMapToInsert = new HashMap<>();
 				potentialMapToInsert.put("name", anotherCountry.get("name").toString());
+				potentialMapToInsert.put("alpha2Code", anotherCountry.get("alpha2Code").toString());
 				potentialMapToInsert.put(field, anotherCountry.get(field).toString());
 				boolean countryIsValid = true;
 				for (Map<String, String> currCountry : randomCountries) {
 					if (currCountry.get("name").equals(potentialMapToInsert.get("name")) ||
-							currCountry.get(field).equals(potentialMapToInsert.get(field))) {
+							currCountry.get(field).equals(potentialMapToInsert.get(field)) ||
+							currCountry.get("alpha2Code").equals(potentialMapToInsert.get("alpha2Code"))) {
 						countryIsValid = false;
 					}
 				}
@@ -159,11 +166,12 @@ public class RestCountries {
 		}
 	}
 
-	private void save(List<String> answersForCheck, String answerToSave, String countryName,
+	private void save(List<String> answersForCheck, String answerToSave, String countryName, String alpha2Code,
 					  String field, List<Map<String, String>> countryListForClient) {
 		answersForCheck.add(answerToSave);
 		Map<String, String> mapToInsert = new HashMap<>();
 		mapToInsert.put("name", countryName);
+		mapToInsert.put("alpha2Code", alpha2Code);
 		mapToInsert.put(field, answerToSave);
 		countryListForClient.add(mapToInsert);
 	}

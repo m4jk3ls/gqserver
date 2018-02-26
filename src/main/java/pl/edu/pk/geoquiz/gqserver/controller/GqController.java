@@ -71,6 +71,7 @@ public class GqController {
 		String token = getToken();
 		int index = new Random().nextInt(countryAndAnswer.size());
 		String country = countryAndAnswer.get(index).get("name");
+		String alpha2Code = countryAndAnswer.get(index).get("alpha2Code");
 		String fullQuestion = questionView.getContent().replaceFirst("<\\?>", questionView.getAttribute()).replaceFirst("<\\?>", country);
 		String answer = null;
 		List<String> possibleAnswers = new ArrayList<>();
@@ -99,10 +100,10 @@ public class GqController {
 			Optional<Archives> archivesOptional = archivesRepo.findByQAttribId(aQuestion.getQuestionAttributes().getId());
 			if (archivesOptional.isPresent()) {
 				Archives archives = archivesOptional.get();
-				return new QuestionResponse(token, fullQuestion, possibleAnswers, country,
+				return new QuestionResponse(token, fullQuestion, possibleAnswers, country, alpha2Code,
 						Integer.toString(archives.getGoodAnswers()), Integer.toString(archives.getBadAnswers()));
 			}
-			return new QuestionResponse(token, fullQuestion, possibleAnswers, country, "-", "-");
+			return new QuestionResponse(token, fullQuestion, possibleAnswers, country, alpha2Code, "-", "-");
 		}
 		return null;
 	}
