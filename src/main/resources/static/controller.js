@@ -23,5 +23,14 @@ $(document).ready(function () {
 			var chart = new google.visualization.GeoChart(document.getElementById('map'));
 			chart.draw(data, options);
 		}
+
+		$('input[id=answerA]').attr('value', restData.possibleAnswers[0]);
+		$('input[id=answerB]').attr('value', restData.possibleAnswers[1]);
+		$('input[id=answerC]').attr('value', restData.possibleAnswers[2]);
+		$('input[id=answerD]').attr('value', restData.possibleAnswers[3]);
+		$('label[for=answerA]').text(restData.possibleAnswers[0]);
+		$('label[for=answerB]').text(restData.possibleAnswers[1]);
+		$('label[for=answerC]').text(restData.possibleAnswers[2]);
+		$('label[for=answerD]').text(restData.possibleAnswers[3]);
 	});
 });

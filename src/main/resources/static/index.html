@@ -8,38 +8,69 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script src="controller.js"></script>
+	<style>
+		#container {
+			width: 800px;
+			margin-left: auto;
+			margin-right: auto;
+			font-size: 15px;
+			font-family: Verdana;
+		}
+
+		#questionContent {
+			width: 440px;
+			text-align: center;
+			padding: 20px 10px;
+			float: left;
+		}
+
+		.stats {
+			width: 150px;
+			text-align: center;
+			padding: 20px 10px;
+			float: left;
+		}
+
+		#map {
+			width: 800px;
+			height: 494px;
+			border: 1px solid black;
+		}
+
+		#answers {
+			width: 800px;
+			margin-top: 10px;
+		}
+
+		.singleAnswer {
+			width: 200px;
+			text-align: center;
+			float: left;
+		}
+	</style>
 </head>
 <body>
-<div id="container" style="
-	width: 800px;
-	margin-left: auto;
-	margin-right: auto
-	">
-	<div id="questionContent" style="
-	width: 440px;
-	text-align: center;
-	padding: 20px 10px;
-    float: left
-	"></div>
-	<div id="goodAnswers" style="
-	width: 150px;
-	text-align: center;
-	padding: 20px 10px;
-	float: left
-	">Good answers:
-	</div>
-	<div id="badAnswers" style="
-	width: 150px;
-	text-align: center;
-	padding: 20px 10px;
-	float: left">Bad Answers:
-	</div>
+<div id="container">
+	<div id="questionContent"></div>
+	<div id="goodAnswers" class="stats">Good answers:</div>
+	<div id="badAnswers" class="stats">Bad Answers:</div>
 	<div style="clear: both"></div>
-	<div id="map" style="
-	width: 800px;
-	height: 494px;
-	border: 1px solid black;
-	"></div>
+	<div id="map"></div>
+	<div id="answers">
+		<div class="singleAnswer">
+			<input type="radio" id="answerA" name="answer"/><label for="answerA"></label>
+		</div>
+		<div class="singleAnswer">
+			<input type="radio" id="answerB" name="answer"/><label for="answerB"></label>
+		</div>
+		<div class="singleAnswer">
+			<input type="radio" id="answerC" name="answer"/><label for="answerC"></label>
+		</div>
+		<div class="singleAnswer">
+			<input type="radio" id="answerD" name="answer"/><label for="answerD"></label>
+		</div>
+		<div style="clear: both;"></div>
+	</div>
 </div>
 </body>
 </html>
