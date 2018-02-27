@@ -32,5 +32,7 @@ $(document).ready(function () {
 		$('label[for=answerB]').text(restData.possibleAnswers[1]);
 		$('label[for=answerC]').text(restData.possibleAnswers[2]);
 		$('label[for=answerD]').text(restData.possibleAnswers[3]);
+
+		document.cookie = "token=" + restData.token;
 	});
 });
