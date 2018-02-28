@@ -33,6 +33,37 @@ $(document).ready(function () {
 		$('label[for=answerC]').text(restData.possibleAnswers[2]);
 		$('label[for=answerD]').text(restData.possibleAnswers[3]);
 
-		document.cookie = "token=" + restData.token;
+		Cookies.set('token', restData.token);
+	});
+
+	$("input[name='answer']").change(function () {
+		if ($("input[name='answer']").is(':checked')) {
+			$('button[id=submitBtn]').removeAttr("disabled");
+		}
+	});
+
+	$("#submitBtn").click(function () {
+		var radioValues = '[';
+		$("input[name='answer']").each(function () {
+			radioValues += '"' + $(this).val() + '"' + ", ";
+		});
+		radioValues = radioValues.substring(0, radioValues.length - 2);
+		radioValues += ']';
+		var jsonFile = '{"token": "' + Cookies.get('token') + '", "userAnswer": "' +
+			$("input[name='answer']:checked").val() + '", "possibleAnswers": ' + radioValues + '}';
+		Cookies.remove('token');
+
+		$.ajax({
+			url: "http://localhost:8080/geoquiz/question/answer",
+			dataType: "json",
+			type: "post",
+			contentType: "application/json",
+			data: jsonFile,
+			processData: false,
+			success: function (responseData) {
+				alert(responseData.correct + "|" + responseData.correctAnswer);
+				location.reload();
+			}
+		});
 	});
 });
