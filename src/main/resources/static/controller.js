@@ -61,8 +61,15 @@ $(document).ready(function () {
 			data: jsonFile,
 			processData: false,
 			success: function (responseData) {
-				alert(responseData.correct + "|" + responseData.correctAnswer);
-				location.reload();
+				$('button[id=submitBtn]').attr('disabled', true);
+				if (responseData.correct.toString() === "false") {
+					$('div[id=correctAnswer]').text("Bad answer :( correct answer is " + responseData.correctAnswer);
+				} else {
+					$('div[id=correctAnswer]').text("Good answer! Excellent!");
+				}
+				setTimeout(function () {
+					location.reload();
+				}, 3000)
 			}
 		});
 	});
